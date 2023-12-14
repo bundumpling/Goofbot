@@ -19,6 +19,7 @@ namespace Goofbot.Modules
         public event EventHandler<EventArgs> NoArgument;
         public event EventHandler<string> RandomColor;
         public event EventHandler SameColor;
+        public event EventHandler<string> BestMatchingColor;
 
         private ColorDictionary ColorDictionary;
         // private SaturdatedColorDictionary 
@@ -68,6 +69,11 @@ namespace Goofbot.Modules
         protected virtual void OnSameColor()
         {
             SameColor?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnBestMatchingColor(string colorName)
+        {
+            BestMatchingColor?.Invoke(this, colorName);
         }
 
         public void OnGuyCommand(object sender, string args)
@@ -153,7 +159,14 @@ namespace Goofbot.Modules
             }
             else
             {
-                string hexColorCode = ColorDictionary.GetHex(args.ToLower());
+                string colorNameLower = args.ToLower();
+                string hexColorCode = ColorDictionary.GetHex(colorNameLower);
+                string bestMatchingColorName = null;
+                if (hexColorCode == null)
+                {
+                    bestMatchingColorName = ColorDictionary.GetBestMatchingColorName(colorNameLower);
+                    hexColorCode = ColorDictionary.GetHex(bestMatchingColorName);
+                }
                 if (hexColorCode != null)
                 {
                     hexColorCode = hexColorCode.ToLowerInvariant();
@@ -161,7 +174,14 @@ namespace Goofbot.Modules
                     {
                         lastColorCode = hexColorCode;
                         CreateBlueGuyImage(hexColorCode);
-                        OnColorChange();
+                        if (bestMatchingColorName != null)
+                        {
+                            OnBestMatchingColor(bestMatchingColorName);
+                        }
+                        else
+                        {
+                            OnColorChange();
+                        }
 
                         string colorFileName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(args.ToLower()).Replace(" ", "") + "Guy.png";
                         try

@@ -83,6 +83,7 @@ namespace Goofbot
             BlueGuyModule.NoArgument += BlueGuyModule_OnNoArgument;
             BlueGuyModule.RandomColor += BlueGuyModule_OnRandomColor;
             BlueGuyModule.SameColor += BlueGuyModule_OnSameColor;
+            BlueGuyModule.BestMatchingColor += BlueGuyModule_OnBestMatchingColor;
 
             PipeServerModule.RunStart += PiperServerModule_OnRunStart;
             PipeServerModule.RunReset += PipeServerModule_OnRunReset;
@@ -167,6 +168,11 @@ namespace Goofbot
         private void BlueGuyModule_OnSameColor(object sender, EventArgs e)
         {
             Client.SendMessage(Channel, "The Guy is already that color Sussy");
+        }
+
+        private void BlueGuyModule_OnBestMatchingColor(object sender, string colorName)
+        {
+            Client.SendMessage(Channel, String.Format("I'm not familiar with this color, but it reminds me of {0} birbAnalysis", colorName));
         }
     }
 }

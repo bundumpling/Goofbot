@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FuzzySharp;
 
 namespace Goofbot
 {
@@ -50,9 +51,35 @@ namespace Goofbot
             Console.WriteLine("Color Dictionary Built");
         }
 
+        public string GetBestMatchingColorName(string colorName)
+        {
+            var bestMatchingColorName = Process.ExtractOne(colorName, colorNameList);
+            
+            if (bestMatchingColorName != null)
+            {
+                return bestMatchingColorName.Value;
+            } 
+            else
+            {
+                return null;
+            }
+        }
+
         public string GetHex(string colorName)
         {
             colorDictionary.TryGetValue(colorName, out string hex);
+
+            if (hex == null)
+            {
+                var colorNameMatch = Process.ExtractOne(colorName, colorNameList);
+                
+                if (colorNameMatch != null)
+                {
+                    colorName = colorNameMatch.Value.ToLower();
+                    colorDictionary.TryGetValue(colorName, out hex);
+                }
+            }
+
             return hex;
         }
 
